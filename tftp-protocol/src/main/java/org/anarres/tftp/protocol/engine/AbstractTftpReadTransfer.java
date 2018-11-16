@@ -7,31 +7,26 @@ package org.anarres.tftp.protocol.engine;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.math.IntMath;
 import com.google.common.primitives.Chars;
-import org.anarres.tftp.protocol.packet.TftpDataPacket;
-import java.io.IOException;
-import java.math.RoundingMode;
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
+import org.anarres.tftp.protocol.packet.*;
+import org.anarres.tftp.protocol.resource.TftpData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.annotation.concurrent.GuardedBy;
-import org.anarres.tftp.protocol.packet.TftpAckPacket;
-import org.anarres.tftp.protocol.packet.TftpErrorCode;
-import org.anarres.tftp.protocol.packet.TftpErrorPacket;
-import org.anarres.tftp.protocol.packet.TftpPacket;
-import org.anarres.tftp.protocol.resource.TftpData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.math.RoundingMode;
+import java.net.SocketAddress;
+import java.nio.ByteBuffer;
 
 /**
  *
  * @author shevek
  */
 public abstract class AbstractTftpReadTransfer<TftpTransferContext> extends AbstractTftpTransfer<TftpTransferContext> {
-
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTftpReadTransfer.class);
-    public static final int MAX_WINDOW_SIZE = 16;
     public static final int MAX_RETRIES = 3;
     private final TftpData source;
     private final int blockSize;
@@ -40,8 +35,8 @@ public abstract class AbstractTftpReadTransfer<TftpTransferContext> extends Abst
     /** The next block to send, indexed from 0. */
     @GuardedBy("lock")
     private int sendBlock = 0;
-    @GuardedBy("lock")
-    private int sendWindow = MAX_WINDOW_SIZE;
+//    @GuardedBy("lock")
+//    private int sendWindow = 1;
     /** The last block acked, indexed from 0. */
     // We start at -2, then -1 on open, causing us to send 0.
     @GuardedBy("lock")
@@ -82,36 +77,25 @@ public abstract class AbstractTftpReadTransfer<TftpTransferContext> extends Abst
 
         synchronized (lock) {
             if (ackBlock < recvBlock) {
-                LOG.warn("{}: Out of order ack {} < {} previously received", new Object[]{
-                    this, ackBlock, recvBlock
-                });
+                LOG.warn("{}: Out of order ack {} < {} previously received", this, ackBlock, recvBlock);
                 // An ack got out of order?
-            } else if (ackBlock == recvBlock) {
-                // 1) The client is re-acking last known block (client timeout)
-                if (recvRetry++ >= MAX_RETRIES) {
-                    LOG.error("{}: Retries exceeded {} at packet {}", this, AbstractTftpReadTransfer.MAX_RETRIES, ackBlock + 1);
-                    close(context);
-                    return;
-                } else {
-                    LOG.warn("{}: Retry {} of packet {}", this, recvRetry, ackBlock + 1);
-                    sendBlock = ackBlock + 1;
-                    sendWindow = Math.max(1, sendWindow >> 1);
-                }
-            } else if (ackBlock == blockCount - 1) {
-                // We are done.
-                close(context);
-                return;
             } else {
-                // The first "open" ack goes through here.
-                // Let's assume that clients don't ack forwards if they're missing a block.
-                recvBlock = ackBlock;
-                recvRetry = 0;
+                sendBlock = ackBlock + 1;
+                if (ackBlock == recvBlock) {
+                    LOG.warn("{}: re-send packet {}", this, sendBlock);
+                } else {
+                    recvBlock = ackBlock;
+                    recvRetry = 0;
+                }
             }
 
-            // Make sure we don't run off the end of the data.
-            int sendLimit = Math.min(recvBlock + sendWindow, blockCount);
-            while (sendBlock < sendLimit)
-                send(context, newPacket(context, sendBlock++));
+            // We are done.
+            if(sendBlock >= blockCount){
+                close(context);
+                return;
+            }
+
+            send(context, newPacket(context, sendBlock));
         }
     }
 
@@ -147,7 +131,16 @@ public abstract class AbstractTftpReadTransfer<TftpTransferContext> extends Abst
 
     @Override
     public void timeout(@Nonnull TftpTransferContext context) throws Exception {
-        ack(context, recvBlock);
+        //client has the timeout mechanism. just the close transmission.
+        close(context);
+/*
+        if (recvRetry++ > MAX_RETRIES){
+            LOG.error("{}: Retries exceeded {} at packet {}", this, AbstractTftpReadTransfer.MAX_RETRIES, recvBlock + 1);
+            close(context);
+        } else {
+            ack(context, recvBlock);
+        }
+*/
     }
 
     @Override
