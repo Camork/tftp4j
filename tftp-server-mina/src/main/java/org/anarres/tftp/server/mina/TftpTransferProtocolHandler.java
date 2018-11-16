@@ -32,7 +32,6 @@ public class TftpTransferProtocolHandler extends IoHandlerAdapter implements IoF
         this.transfer = transfer;
     }
 
-    @Override
     public void operationComplete(ConnectFuture future) {
         if (!future.isConnected()) {
             connector.dispose(false);

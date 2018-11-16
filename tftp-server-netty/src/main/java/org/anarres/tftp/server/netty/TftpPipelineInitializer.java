@@ -10,8 +10,12 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.logging.LoggingHandler;
 import javax.annotation.Nonnull;
+
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -66,8 +70,10 @@ public class TftpPipelineInitializer extends ChannelInitializer<Channel> {
         // pipeline.addLast(sharedHandlers.exceptionHandler);
         // if (sharedHandlers.debug) pipeline.addLast(sharedHandlers.wireLogger);
         pipeline.addLast(sharedHandlers.codec);
-        if (sharedHandlers.debug)
+        if (sharedHandlers.debug){
             pipeline.addLast(sharedHandlers.packetLogger);
+        }
+        pipeline.addLast(new IdleStateHandler(60, 0, 0, TimeUnit.SECONDS));
         pipeline.addLast(handler);
     }
 }
