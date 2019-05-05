@@ -4,9 +4,9 @@
  */
 package org.anarres.tftp.protocol.resource;
 
-import java.io.IOException;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import java.io.IOException;
 
 /**
  *
@@ -19,4 +19,7 @@ public interface TftpDataProvider {
      */
     @CheckForNull
     public TftpData open(@Nonnull String filename) throws IOException;
+
+    // Number of bytes that can be provided (e.g., length of file)
+    public long dataSize(String filename) throws IOException;
 }

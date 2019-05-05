@@ -4,8 +4,8 @@
  */
 package org.anarres.tftp.protocol.packet;
 
-import com.google.common.base.Objects;
 import java.nio.ByteBuffer;
+import jersey.repackaged.com.google.common.base.MoreObjects;
 import javax.annotation.Nonnull;
 
 /**
@@ -70,7 +70,7 @@ public class TftpDataPacket extends TftpPacket {
     }
 
     @Override
-    protected Objects.ToStringHelper toStringHelper() {
+    protected MoreObjects.ToStringHelper toStringHelper() {
         return super.toStringHelper()
                 .add("blockNumber", (int) getBlockNumber())
                 .add("data", data);

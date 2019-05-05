@@ -5,9 +5,10 @@
 package org.anarres.tftp.protocol.resource;
 
 import com.google.common.base.Preconditions;
+
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import javax.annotation.Nonnull;
 
 /**
  *

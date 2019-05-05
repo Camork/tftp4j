@@ -4,13 +4,14 @@
  */
 package org.anarres.tftp.protocol.packet;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import java.nio.ByteBuffer;
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+import jersey.repackaged.com.google.common.base.MoreObjects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
+import java.nio.ByteBuffer;
 
 /**
  *
@@ -23,13 +24,25 @@ public abstract class TftpRequestPacket extends TftpPacket {
     private TftpMode mode;
     private int blockSize = TftpDataPacket.BLOCK_SIZE;
 
+    private boolean mGotBlkSize = false;	// Set true if received explicit block size
+    private long mTSize = -1;	// Set to a >= if received
+
     public String getFilename() {
         return filename;
     }
 
+	/**
+	 PIXILAB added check to avoid .. to escape the TDTP root, and prefix with leading / if none there, since this
+	 TFT server seem to assume that.
+	 */
     public void setFilename(@Nonnull String filename) {
-        this.filename = Preconditions.checkNotNull(filename, "Filename was null.");
+		filename = Preconditions.checkNotNull(filename, "Filename was null.");
+		Preconditions.checkArgument(!filename.contains(".."), ".. not allowed in path; %s", filename);
+		if (!filename.startsWith(kReqFilenamePrefix))	// PXE boot requests sends filename without this
+			filename = kReqFilenamePrefix + filename;
+		this.filename = filename;
     }
+	private static String kReqFilenamePrefix = "/";
 
     public TftpMode getMode() {
         return mode;
@@ -39,6 +52,11 @@ public abstract class TftpRequestPacket extends TftpPacket {
         this.mode = mode;
     }
 
+	// True if got explicit block size
+	public boolean gotBlockSize() {
+    	return mGotBlkSize;
+	}
+
     @Nonnegative
     public int getBlockSize() {
         return blockSize;
@@ -47,6 +65,16 @@ public abstract class TftpRequestPacket extends TftpPacket {
     public void setBlockSize(@Nonnegative int blockSize) {
         this.blockSize = blockSize;
     }
+
+    // Truw if received a tsize parameter
+    public boolean gotTSize() {
+    	return mTSize >= 0;
+	}
+
+	// The value of tsize param, if gotTSize
+	public long getTSize() {
+    	return mTSize;
+	}
 
     @Override
     public void toWire(ByteBuffer buffer) {
@@ -66,14 +94,16 @@ public abstract class TftpRequestPacket extends TftpPacket {
             while (buffer.hasRemaining()) {
                 String word = getString(buffer);
                 if ("blksize".equalsIgnoreCase(word)) {
+					mGotBlkSize = true;
                     blockSize = Integer.parseInt(getString(buffer));
                     // TODO: Assert blockSize < 16K for safety.
                 } else if ("timeout".equalsIgnoreCase(word)) {
-                    // Skip a word.
+                    // Read past timeout option
+					int timeout = Integer.parseInt(getString(buffer));
                     LOG.error("Unhandled TFTP timeout");
                 } else if ("tsize".equalsIgnoreCase(word)) {
-                    // Skip a word.
-                    LOG.error("Unhandled TFTP tsize");
+                    this.mTSize = Integer.parseInt(getString(buffer));
+                    // LOG.error("Unhandled TFTP tsize");
                 } else {
                     LOG.error("Unknown TFTP command word " + word);
                 }
@@ -84,7 +114,7 @@ public abstract class TftpRequestPacket extends TftpPacket {
     }
 
     @Override
-    protected Objects.ToStringHelper toStringHelper() {
+    protected MoreObjects.ToStringHelper toStringHelper() {
         return super.toStringHelper()
                 .add("filename", getFilename())
                 .add("mode", getMode())

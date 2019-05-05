@@ -7,10 +7,7 @@ package org.anarres.tftp.server.mina;
 import java.net.SocketAddress;
 import javax.annotation.Nonnull;
 import org.anarres.tftp.protocol.engine.TftpTransfer;
-import org.anarres.tftp.protocol.packet.TftpErrorCode;
-import org.anarres.tftp.protocol.packet.TftpErrorPacket;
-import org.anarres.tftp.protocol.packet.TftpPacket;
-import org.anarres.tftp.protocol.packet.TftpRequestPacket;
+import org.anarres.tftp.protocol.packet.*;
 import org.anarres.tftp.protocol.resource.TftpData;
 import org.anarres.tftp.protocol.resource.TftpDataProvider;
 import org.apache.mina.core.future.ConnectFuture;
@@ -51,7 +48,12 @@ public class TftpServerProtocolHandler extends IoHandlerAdapter {
                     session.close(false);
                 } else {
                     final NioDatagramConnector connector = new NioDatagramConnector();
-                    TftpTransfer transfer = new TftpReadTransfer(address, source, request.getBlockSize());
+                    TftpTransfer transfer = new TftpReadTransfer(
+                    	address,
+                    	source,
+                    	request.getBlockSize(),
+						TftpOptAckPackage.makeIfDesired(packet.getRemoteAddress(), request, provider)
+					);
                     TftpTransferProtocolHandler handler = new TftpTransferProtocolHandler(connector, transfer);
                     connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new TftpProtocolCodecFactory()));
                     connector.getFilterChain().addLast("logger-packet", new LoggingFilter("tftp-transfer-packet"));

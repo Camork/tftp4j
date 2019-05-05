@@ -31,7 +31,7 @@ public class AbstractTftpReadTransferTest {
     private static class TftpReadTransfer extends AbstractTftpReadTransfer<List<TftpPacket>> {
 
         public TftpReadTransfer(TftpData source, int blockSize) throws IOException {
-            super(new InetSocketAddress(1046), source, blockSize);
+            super(new InetSocketAddress(1046), source, blockSize, null);
         }
 
         @Override

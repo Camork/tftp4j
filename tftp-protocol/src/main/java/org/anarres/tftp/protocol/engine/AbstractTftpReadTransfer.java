@@ -45,11 +45,19 @@ public abstract class AbstractTftpReadTransfer<TftpTransferContext> extends Abst
     private int recvRetry = 0;
     private final Object lock = new Object();
 
-    public AbstractTftpReadTransfer(@Nonnull SocketAddress remoteAddress, @Nonnull TftpData source, @Nonnegative int blockSize) throws IOException {
+    private final TftpOptAckPackage mOptAck;	// To send at start, and await ack for, if not null
+
+    public AbstractTftpReadTransfer(
+    	@Nonnull SocketAddress remoteAddress,
+    	@Nonnull TftpData source,
+    	@Nonnegative int blockSize,
+		TftpOptAckPackage optAck	// Send first, then await ack for it before sending data, if specified
+	) throws IOException {
         super(remoteAddress);
         this.source = source;
         this.blockSize = blockSize;
         this.blockCount = IntMath.divide(source.getSize() + 1, blockSize, RoundingMode.CEILING);
+		mOptAck = optAck;
     }
 
     @Nonnull
@@ -69,10 +77,12 @@ public abstract class AbstractTftpReadTransfer<TftpTransferContext> extends Abst
     }
 
     /**
-     * @param ackBlock indexed from 0
+     * @param ackBlock for real data block indexed from 0. I will get -1 to get started sending first data
+     * block, which can either happen immediately (through my open handler), or as a result of getting
+     * the ack for TftpOptAckPackage (if any sent).
      */
     @VisibleForTesting
-    /* pp */ void ack(@Nonnull TftpTransferContext context, /* @Nonnegative */ int ackBlock) throws Exception {
+    void ack(@Nonnull TftpTransferContext context, int ackBlock) throws Exception {
         // if (LOG.isDebugEnabled()) LOG.debug("<- Ack protocol-block {} (index {})", (ackBlock + 1), ackBlock);
 
         synchronized (lock) {
@@ -101,8 +111,11 @@ public abstract class AbstractTftpReadTransfer<TftpTransferContext> extends Abst
 
     @Override
     public void open(@Nonnull TftpTransferContext context) throws Exception {
-        ack(context, -1);
-        flush(context);
+    	if (mOptAck == null)
+			ack(context, -1);	// Get us going with 1st block
+		else
+			send(context, mOptAck);	    // Else will get explicit ACK -1 originating from client
+		flush(context);
     }
 
     @Override
@@ -110,6 +123,7 @@ public abstract class AbstractTftpReadTransfer<TftpTransferContext> extends Abst
         switch (packet.getOpcode()) {
             case ACK:
                 TftpAckPacket ack = (TftpAckPacket) packet;
+                // Below will yield -1 as block number passed to ack for any TftpOptAckPackage ack
                 ack(context, ack.getBlockNumber() - 1);
                 break;
             case RRQ:

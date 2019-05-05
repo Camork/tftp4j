@@ -5,10 +5,10 @@
 package org.anarres.tftp.protocol.resource;
 
 import com.google.common.base.Preconditions;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import javax.annotation.Nonnull;
 
 /**
  *
@@ -18,7 +18,6 @@ public class TftpByteArrayData extends AbstractTftpData {
 
     private final byte[] data;
 
-    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public TftpByteArrayData(@Nonnull byte[] data) {
         this.data = data;
     }

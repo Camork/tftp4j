@@ -5,11 +5,12 @@
 package org.anarres.tftp.protocol.resource;
 
 import com.google.common.base.Charsets;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 
 /**
  *
@@ -42,4 +43,11 @@ public class TftpMemoryDataProvider extends AbstractTftpDataProvider {
             return null;
         return new TftpByteArrayData(data);
     }
+
+	@Override
+	public long dataSize(String filename) throws IOException {
+		byte[] data = getData(filename);
+		return (data == null) ? 0 : data.length;
+	}
+
 }

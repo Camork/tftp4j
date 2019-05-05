@@ -9,16 +9,14 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
-import javax.annotation.Nonnull;
 import org.anarres.tftp.protocol.engine.TftpTransfer;
-import org.anarres.tftp.protocol.packet.TftpErrorCode;
-import org.anarres.tftp.protocol.packet.TftpErrorPacket;
-import org.anarres.tftp.protocol.packet.TftpPacket;
-import org.anarres.tftp.protocol.packet.TftpRequestPacket;
+import org.anarres.tftp.protocol.packet.*;
 import org.anarres.tftp.protocol.resource.TftpData;
 import org.anarres.tftp.protocol.resource.TftpDataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nonnull;
 
 /**
  *
@@ -49,7 +47,12 @@ public class TftpServerHandler extends ChannelInboundHandlerAdapter {
                         ctx.writeAndFlush(new TftpErrorPacket(packet.getRemoteAddress(), TftpErrorCode.FILE_NOT_FOUND), ctx.voidPromise());
                         // ctx.writeAndFlush(new TftpErrorPacket(packet.getRemoteAddress(), TftpErrorCode.FILE_NOT_FOUND)).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
                     } else {
-                        TftpTransfer<Channel> transfer = new TftpReadTransfer(packet.getRemoteAddress(), source, request.getBlockSize());
+                        TftpTransfer<Channel> transfer = new TftpReadTransfer(
+                        	packet.getRemoteAddress(),
+                        	source,
+                        	request.getBlockSize(),
+							TftpOptAckPackage.makeIfDesired(packet.getRemoteAddress(), request, provider)
+						);
                         Bootstrap bootstrap = new Bootstrap()
                                 .group(ctx.channel().eventLoop())
                                 .channel(channel.getClass())

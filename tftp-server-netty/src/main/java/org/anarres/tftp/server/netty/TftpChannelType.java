@@ -5,44 +5,48 @@
 package org.anarres.tftp.server.netty;
 
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.epoll.EpollDatagramChannel;
-import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import java.util.concurrent.ThreadFactory;
+
 import javax.annotation.Nonnull;
+import java.util.concurrent.ExecutorService;
 
 /**
+ *	Tweaked by Mike@Pixilab to remove EPOLL dependency and taking an ExecutorService
+ * instead of a thread factory, to make sure no threads are wasted when TFTP not used
+ * for some time.
  *
- * @author shevek
+ * Original author shevek
  */
 public enum TftpChannelType {
 
     NIO {
         @Override
-        public EventLoopGroup newEventLoopGroup(ThreadFactory factory) {
-            return new NioEventLoopGroup(0, factory);
+        public EventLoopGroup newEventLoopGroup(ExecutorService es) {
+            return new NioEventLoopGroup(0, es);
         }
 
         @Override
         public Class<? extends DatagramChannel> getChannelType() {
             return NioDatagramChannel.class;
         }
-    }, EPOLL {
+    } , EPOLL {
         @Override
-        public EventLoopGroup newEventLoopGroup(ThreadFactory factory) {
-            return new EpollEventLoopGroup(0, factory);
+        public EventLoopGroup newEventLoopGroup(ExecutorService es) {
+			throw new RuntimeException("EPOLL Not implemented");
+            // return new EpollEventLoopGroup(0, es);
         }
 
         @Override
         public Class<? extends DatagramChannel> getChannelType() {
-            return EpollDatagramChannel.class;
+        	throw new RuntimeException("EPOLL Not implemented");
+            // return EpollDatagramChannel.class;
         }
-    };
+    } ;
 
     @Nonnull
-    public abstract EventLoopGroup newEventLoopGroup(@Nonnull ThreadFactory factory);
+    public abstract EventLoopGroup newEventLoopGroup(@Nonnull ExecutorService factory);
 
     @Nonnull
     public abstract Class<? extends DatagramChannel> getChannelType();

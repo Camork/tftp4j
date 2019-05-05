@@ -9,12 +9,14 @@ import io.netty.channel.Channel;
 import io.netty.channel.EventLoop;
 import io.netty.channel.EventLoopGroup;
 import io.netty.util.concurrent.DefaultThreadFactory;
-import java.io.IOException;
-import java.util.concurrent.ThreadFactory;
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
 import org.anarres.tftp.protocol.engine.AbstractTftpServer;
 import org.anarres.tftp.protocol.resource.TftpDataProvider;
+
+import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  *
@@ -51,8 +53,10 @@ public class TftpServer extends AbstractTftpServer {
     public void start() throws IOException, InterruptedException {
         TftpChannelType mode = getChannelType();
 
-        ThreadFactory factory = new DefaultThreadFactory("tftp-server");
-        EventLoopGroup group = mode.newEventLoopGroup(factory);
+
+		// Using newCachedThreadPool will shut down threads when no longer needed
+		ExecutorService es = Executors.newCachedThreadPool(new DefaultThreadFactory("tftp-server"));
+        EventLoopGroup group = mode.newEventLoopGroup(es);
 
         Bootstrap b = new Bootstrap();
         b.group(group);
