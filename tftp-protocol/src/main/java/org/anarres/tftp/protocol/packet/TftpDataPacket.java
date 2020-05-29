@@ -5,7 +5,7 @@
 package org.anarres.tftp.protocol.packet;
 
 import java.nio.ByteBuffer;
-import jersey.repackaged.com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects;
 import javax.annotation.Nonnull;
 
 /**

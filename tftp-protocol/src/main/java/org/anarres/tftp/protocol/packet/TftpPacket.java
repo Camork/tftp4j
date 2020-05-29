@@ -4,15 +4,15 @@
  */
 package org.anarres.tftp.protocol.packet;
 
-import jersey.repackaged.com.google.common.base.MoreObjects;
-import jersey.repackaged.com.google.common.base.Preconditions;
-import org.apache.commons.codec.Charsets;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -21,7 +21,7 @@ import java.nio.charset.Charset;
 public abstract class TftpPacket {
 
     // Substitute for netascii in the RFC. ISO_8859_1 is 8-bit transparent.
-    public static final Charset CHARSET = Charsets.ISO_8859_1;
+    public static final Charset CHARSET = StandardCharsets.ISO_8859_1;
     private SocketAddress remoteAddress;
 
     @Nonnull

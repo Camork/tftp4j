@@ -33,7 +33,7 @@ public class TftpServerTester {
 
     @Nonnegative
     public int getPort() {
-        return 1067;
+        return 69;
     }
 
     private void assertSucceeds(String path, int mode) throws Exception {

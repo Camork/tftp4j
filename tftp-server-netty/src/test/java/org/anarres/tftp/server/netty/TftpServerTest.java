@@ -4,10 +4,11 @@
  */
 package org.anarres.tftp.server.netty;
 
-import io.netty.util.ResourceLeakDetector;
 import org.anarres.tftp.protocol.engine.TftpServerTester;
 import org.junit.Before;
 import org.junit.Test;
+
+import io.netty.util.ResourceLeakDetector;
 
 /**
  *
@@ -24,12 +25,12 @@ public class TftpServerTest {
     public void testServer() throws Exception {
         TftpServerTester tester = new TftpServerTester();
         TftpServer server = new TftpServer(tester.getProvider(), tester.getPort());
-        // server.setDebug(true);
-        // server.setChannelType(TftpChannelType.NIO);
+        server.setDebug(true);
+        server.setChannelType(TftpChannelType.NIO);
         try {
             server.start();
             tester.run();
-            // Thread.sleep(100000);
+             Thread.sleep(1000000);
         } finally {
             server.stop();
         }

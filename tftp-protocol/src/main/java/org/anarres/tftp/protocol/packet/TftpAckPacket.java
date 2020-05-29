@@ -4,7 +4,7 @@
  */
 package org.anarres.tftp.protocol.packet;
 
-import jersey.repackaged.com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects;
 
 import java.nio.ByteBuffer;
 
