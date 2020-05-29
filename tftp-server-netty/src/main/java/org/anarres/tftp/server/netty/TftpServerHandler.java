@@ -4,19 +4,24 @@
  */
 package org.anarres.tftp.server.netty;
 
+import javax.annotation.Nonnull;
+
+import org.anarres.tftp.protocol.engine.TftpTransfer;
+import org.anarres.tftp.protocol.packet.TftpErrorCode;
+import org.anarres.tftp.protocol.packet.TftpErrorPacket;
+import org.anarres.tftp.protocol.packet.TftpOptAckPackage;
+import org.anarres.tftp.protocol.packet.TftpPacket;
+import org.anarres.tftp.protocol.packet.TftpRequestPacket;
+import org.anarres.tftp.protocol.resource.TftpData;
+import org.anarres.tftp.protocol.resource.TftpDataProvider;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
-import org.anarres.tftp.protocol.engine.TftpTransfer;
-import org.anarres.tftp.protocol.packet.*;
-import org.anarres.tftp.protocol.resource.TftpData;
-import org.anarres.tftp.protocol.resource.TftpDataProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nonnull;
 
 /**
  *
@@ -24,7 +29,7 @@ import javax.annotation.Nonnull;
  */
 public class TftpServerHandler extends ChannelInboundHandlerAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TftpServerHandler.class);
+    private static final Logger LOG = LogManager.getLogger();
     private final TftpPipelineInitializer.SharedHandlers sharedHandlers;
     private final TftpDataProvider provider;
 
@@ -70,7 +75,7 @@ public class TftpServerHandler extends ChannelInboundHandlerAdapter {
                     break;
                 }
                 case WRQ: {
-                    // LOG.warn("Unexpected TFTP " + packet.getOpcode() + " packet: " + packet);
+                    LOG.warn("Unexpected TFTP " + packet.getOpcode() + " packet: " + packet);
                     ctx.writeAndFlush(new TftpErrorPacket(packet.getRemoteAddress(), TftpErrorCode.PERMISSION_DENIED), ctx.voidPromise());
                     break;
                 }

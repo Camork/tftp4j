@@ -26,7 +26,6 @@ subprojects {
 project(':tftp-protocol') {
     dependencies {
         compile 'com.google.code.findbugs:annotations:2.0.3'
-        compile 'org.slf4j:slf4j-api:1.7.12'
         implementation 'com.google.guava:guava:28.1-jre'
         compile 'org.codehaus.mojo:animal-sniffer-annotations:1.14'
 

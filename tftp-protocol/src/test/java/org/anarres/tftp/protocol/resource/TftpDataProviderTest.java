@@ -6,9 +6,10 @@ package org.anarres.tftp.protocol.resource;
 
 import java.nio.ByteBuffer;
 import javax.annotation.Nonnull;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import static org.junit.Assert.*;
 
 /**
@@ -17,7 +18,7 @@ import static org.junit.Assert.*;
  */
 public class TftpDataProviderTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TftpDataProviderTest.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     public void run(@Nonnull TftpDataProvider provider) throws Exception {
         assertNotNull(provider);

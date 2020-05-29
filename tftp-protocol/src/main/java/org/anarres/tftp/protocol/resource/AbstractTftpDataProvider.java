@@ -5,11 +5,12 @@
 package org.anarres.tftp.protocol.resource;
 
 import com.google.common.io.Files;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -17,7 +18,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class AbstractTftpDataProvider implements TftpDataProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractTftpDataProvider.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     @CheckForNull
     protected static String toPath(@Nonnull String prefix, @Nonnull String path) {

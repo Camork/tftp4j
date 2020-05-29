@@ -4,14 +4,16 @@
  */
 package org.anarres.tftp.protocol.packet;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.MoreObjects;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.google.common.base.Preconditions;
+
+import java.nio.ByteBuffer;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
-import java.nio.ByteBuffer;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -19,7 +21,7 @@ import java.nio.ByteBuffer;
  */
 public abstract class TftpRequestPacket extends TftpPacket {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TftpRequestPacket.class);
+    private static final Logger LOG = LogManager.getLogger();
     private String filename;
     private TftpMode mode;
     private int blockSize = TftpDataPacket.BLOCK_SIZE;

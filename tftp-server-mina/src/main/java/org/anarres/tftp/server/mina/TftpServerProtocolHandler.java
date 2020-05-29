@@ -16,8 +16,7 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioDatagramConnector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -25,7 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TftpServerProtocolHandler extends IoHandlerAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TftpServerProtocolHandler.class);
+    private static final Logger LOG = LogManager.getLogger();
     private final TftpDataProvider provider;
 
     public TftpServerProtocolHandler(@Nonnull TftpDataProvider provider) {

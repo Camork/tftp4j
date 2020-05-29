@@ -13,8 +13,7 @@ import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.service.IoService;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -23,7 +22,7 @@ import org.slf4j.LoggerFactory;
 // TODO: Re-code this to use a window of (say) 8 packets.
 public class TftpTransferProtocolHandler extends IoHandlerAdapter implements IoFutureListener<ConnectFuture> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TftpTransferProtocolHandler.class);
+    private static final Logger LOG = LogManager.getLogger();
     private final IoService connector;
     private final TftpTransfer<IoSession> transfer;
 

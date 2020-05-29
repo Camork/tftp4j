@@ -5,20 +5,24 @@
 package org.anarres.tftp.protocol.engine;
 
 import com.google.common.primitives.Chars;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.anarres.tftp.protocol.packet.TftpAckPacket;
 import org.anarres.tftp.protocol.packet.TftpDataPacket;
 import org.anarres.tftp.protocol.packet.TftpPacket;
 import org.anarres.tftp.protocol.resource.TftpByteArrayData;
 import org.anarres.tftp.protocol.resource.TftpData;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  *
@@ -26,7 +30,7 @@ import static org.junit.Assert.*;
  */
 public class AbstractTftpReadTransferTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractTftpReadTransferTest.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     private static class TftpReadTransfer extends AbstractTftpReadTransfer<List<TftpPacket>> {
 

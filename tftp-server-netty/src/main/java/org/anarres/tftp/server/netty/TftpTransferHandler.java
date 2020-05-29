@@ -13,8 +13,8 @@ import java.io.IOException;
 import javax.annotation.Nonnull;
 import org.anarres.tftp.protocol.engine.TftpTransfer;
 import org.anarres.tftp.protocol.packet.TftpPacket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TftpTransferHandler extends ChannelDuplexHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TftpTransferHandler.class);
+    private static final Logger LOG = LogManager.getLogger();
     private final TftpTransfer<Channel> transfer;
 
     public TftpTransferHandler(@Nonnull TftpTransfer<Channel> transfer) throws IOException {

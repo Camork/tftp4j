@@ -16,8 +16,8 @@ import java.nio.ByteBuffer;
 import javax.annotation.Nonnull;
 import org.anarres.tftp.protocol.codec.TftpPacketDecoder;
 import org.anarres.tftp.protocol.packet.TftpPacket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 @ChannelHandler.Sharable
 public class TftpCodec extends ChannelDuplexHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TftpCodec.class);
+    private static final Logger LOG = LogManager.getLogger();
     private final TftpPacketDecoder decoder = new TftpPacketDecoder();
 
     @Nonnull

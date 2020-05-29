@@ -14,8 +14,8 @@ import org.anarres.tftp.protocol.packet.TftpOpcode;
 import org.anarres.tftp.protocol.packet.TftpPacket;
 import org.anarres.tftp.protocol.packet.TftpReadRequestPacket;
 import org.anarres.tftp.protocol.packet.TftpWriteRequestPacket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TftpPacketDecoder {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TftpPacketDecoder.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     @Nonnull
     public TftpPacket decode(@Nonnull SocketAddress remoteAddress, @Nonnull ByteBuffer buf) {

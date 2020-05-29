@@ -7,26 +7,33 @@ package org.anarres.tftp.protocol.engine;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.math.IntMath;
 import com.google.common.primitives.Chars;
-import org.anarres.tftp.protocol.packet.*;
-import org.anarres.tftp.protocol.resource.TftpData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.math.RoundingMode;
+import java.net.SocketAddress;
+import java.nio.ByteBuffer;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.annotation.concurrent.GuardedBy;
-import java.io.IOException;
-import java.math.RoundingMode;
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
+
+import org.anarres.tftp.protocol.packet.TftpAckPacket;
+import org.anarres.tftp.protocol.packet.TftpDataPacket;
+import org.anarres.tftp.protocol.packet.TftpErrorCode;
+import org.anarres.tftp.protocol.packet.TftpErrorPacket;
+import org.anarres.tftp.protocol.packet.TftpOptAckPackage;
+import org.anarres.tftp.protocol.packet.TftpPacket;
+import org.anarres.tftp.protocol.resource.TftpData;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author shevek
  */
 public abstract class AbstractTftpReadTransfer<TftpTransferContext> extends AbstractTftpTransfer<TftpTransferContext> {
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractTftpReadTransfer.class);
+    private static final Logger LOG = LogManager.getLogger();
     public static final int MAX_RETRIES = 3;
     private final TftpData source;
     private final int blockSize;
