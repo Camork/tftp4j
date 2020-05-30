@@ -34,5 +34,5 @@ public interface TftpData extends Closeable {
     @Nonnegative
     public int read(@Nonnull ByteBuffer out, @Nonnegative int offset) throws IOException;
 
-    int write(ByteBuffer in) throws IOException;
+    int write(ByteBuffer in, int offset) throws IOException;
 }

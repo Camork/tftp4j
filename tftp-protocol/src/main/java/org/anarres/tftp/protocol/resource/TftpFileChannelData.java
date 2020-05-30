@@ -37,6 +37,12 @@ public class TftpFileChannelData extends AbstractTftpData {
     }
 
     @Override
+    public int write(ByteBuffer in, int offset) throws IOException {
+        int length = channel.write(in);
+        return Math.max(length, 0);
+    }
+
+    @Override
     public void close() throws IOException {
         channel.close();
     }

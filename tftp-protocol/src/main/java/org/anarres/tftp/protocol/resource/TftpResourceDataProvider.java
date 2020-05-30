@@ -10,6 +10,7 @@ import com.google.common.io.Resources;
 import java.io.IOException;
 import java.net.URL;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 /**
@@ -41,6 +42,12 @@ public class TftpResourceDataProvider extends AbstractTftpDataProvider {
                 getClass().getClassLoader());
     }
 
+    @CheckForNull
+    @Override
+    public TftpData openForWrite(@Nonnull String filename, int tsize) throws IOException {
+        throw new IOException("Not allowed!");
+    }
+
     @Override
     public TftpData open(@Nonnull String filename) throws IOException {
         URL resource = getResourceForPath(filename);
@@ -51,12 +58,12 @@ public class TftpResourceDataProvider extends AbstractTftpDataProvider {
     }
 
     private URL getResourceForPath(String filename) throws IOException {
-		String path = toPath(getPrefix(), filename);
-		  if (path == null)
-			  return null;
-		  ClassLoader loader = getClassLoader();
-		  return loader.getResource(path);
-	}
+        String path = toPath(getPrefix(), filename);
+        if (path == null)
+            return null;
+        ClassLoader loader = getClassLoader();
+        return loader.getResource(path);
+    }
 
 	@Override
 	public long dataSize(String filename) throws IOException {

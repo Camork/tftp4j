@@ -8,9 +8,12 @@ import com.google.common.io.ByteStreams;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.Random;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+
+import org.anarres.tftp.protocol.resource.TftpByteArrayData;
 import org.anarres.tftp.protocol.resource.TftpMemoryDataProvider;
 import org.apache.commons.net.tftp.TFTPClient;
 import org.apache.commons.net.util.Base64;
@@ -39,7 +42,10 @@ public class TftpServerTester {
     private void assertSucceeds(String path, int mode) throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         client.receiveFile(path, mode, out, InetAddress.getLoopbackAddress(), getPort());
-        assertArrayEquals(provider.getData(path), out.toByteArray());
+        TftpByteArrayData data = provider.getData(path);
+        ByteBuffer buffer=ByteBuffer.allocate(data.getSize());
+        data.read(buffer,0);
+        assertArrayEquals(buffer.array(), out.toByteArray());
     }
 
     private void assertFails(String path, int mode) throws Exception {

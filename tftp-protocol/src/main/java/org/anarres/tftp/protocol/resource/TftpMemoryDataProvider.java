@@ -8,7 +8,6 @@ import com.google.common.base.Charsets;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,13 +16,14 @@ import java.util.Map;
  */
 public class TftpMemoryDataProvider extends AbstractTftpDataProvider {
 
-    private final Map<String, byte[]> map = new HashMap<String, byte[]>();
+    private final Map<String,TftpByteArrayData> map = new HashMap<>();
 
     public void setData(@Nonnull String name, @CheckForNull byte[] data) {
-        if (data == null)
+        if (data == null) {
             map.remove(name);
-        else
-            map.put(name, data);
+        } else {
+            map.put(name, new TftpByteArrayData(data));
+        }
     }
 
     public void setData(@Nonnull String name, @Nonnull String data) {
@@ -31,22 +31,27 @@ public class TftpMemoryDataProvider extends AbstractTftpDataProvider {
     }
 
     @CheckForNull
-    public byte[] getData(String name) {
+    public TftpByteArrayData getData(String name) {
         return map.get(name);
     }
 
+    @CheckForNull
     @Override
-    public TftpData open(String filename) throws IOException {
-        byte[] data = getData(filename);
-        if (data == null)
-            return null;
-        return new TftpByteArrayData(data);
+    public TftpData openForWrite(@Nonnull String filename, int tsize) {
+        TftpByteArrayData data = new TftpByteArrayData(new byte[tsize]);
+        map.put(filename, data);
+        return data;
     }
 
-	@Override
-	public long dataSize(String filename) throws IOException {
-		byte[] data = getData(filename);
-		return (data == null) ? 0 : data.length;
-	}
+    @Override
+    public TftpData open(@Nonnull String filename) {
+        return getData(filename);
+    }
+
+    @Override
+    public long dataSize(String filename) {
+        TftpData data = getData(filename);
+        return (data == null) ? 0 : data.getSize();
+    }
 
 }

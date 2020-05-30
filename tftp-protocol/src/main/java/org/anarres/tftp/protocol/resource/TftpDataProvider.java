@@ -14,6 +14,12 @@ import java.io.IOException;
 public interface TftpDataProvider {
 
     /**
+     * Request for write
+     */
+    @CheckForNull
+    public TftpData openForWrite(@Nonnull String filename, int tsize) throws IOException;
+
+    /**
      * Returns the resource with the given name.
      */
     @CheckForNull

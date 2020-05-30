@@ -52,6 +52,17 @@ public class TftpFileChannelDataProvider extends AbstractTftpDataProvider {
         return file;
     }
 
+    @CheckForNull
+    @Override
+    public TftpData openForWrite(@Nonnull String filename, int tsize) throws IOException {
+        File file = toFile(filename);
+        if (file == null)
+            return null;
+        RandomAccessFile raf = new RandomAccessFile(file, "rw");
+        FileChannel channel = raf.getChannel();
+        return new TftpFileChannelData(channel, Ints.checkedCast(channel.size()));
+    }
+
     @Override
     // @IgnoreJRERequirement
     public TftpData open(@Nonnull String filename) throws IOException {

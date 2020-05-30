@@ -36,4 +36,12 @@ public class TftpByteBufferData extends AbstractTftpData {
         out.put(slice);
         return length;
     }
+
+    @Override
+    public int write(ByteBuffer in, int offset){
+        data.put(in);
+
+        return in.capacity();
+    }
+
 }

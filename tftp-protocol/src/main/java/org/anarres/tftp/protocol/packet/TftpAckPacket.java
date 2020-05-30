@@ -5,6 +5,7 @@
 package org.anarres.tftp.protocol.packet;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.primitives.Chars;
 
 import java.nio.ByteBuffer;
 
@@ -16,6 +17,13 @@ public class TftpAckPacket extends TftpPacket {
 
     /** Cheat for an unsigned 2-byte value. */
     private char blockNumber;
+
+    public TftpAckPacket() {
+    }
+
+    public TftpAckPacket(long blockNumber) {
+        this.blockNumber = Chars.checkedCast(blockNumber);
+    }
 
     @Override
     public TftpOpcode getOpcode() {

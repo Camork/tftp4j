@@ -4,12 +4,13 @@
 
 package org.anarres.tftp.protocol.packet;
 
-import org.anarres.tftp.protocol.resource.TftpDataProvider;
-
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+
+import javax.annotation.Nonnull;
+
+import org.anarres.tftp.protocol.resource.TftpDataProvider;
 
 /**
  * A stab at implementing Options ACK according to http://tools.ietf.org/html/rfc2347
@@ -53,10 +54,15 @@ public class TftpOptAckPackage extends TftpPacket {
 		if (mReqToAck.gotTSize()) {
 			// Reply with actual total transfer (e.g. file) size
 			long size = 0;
-			try {
-				size = mProvider.dataSize(mReqToAck.getFilename());
-			} catch (IOException iox) {
-				// Just leave size 0 for now - should cause error later...
+
+			if (mReqToAck instanceof TftpWriteRequestPacket) {
+				size = mReqToAck.getTSize();
+			} else {
+				try {
+					size = mProvider.dataSize(mReqToAck.getFilename());
+				} catch (IOException iox) {
+					// Just leave size 0 for now - should cause error later...
+				}
 			}
 			putString(buffer, "tsize");
 			putString(buffer, Long.toString(size));

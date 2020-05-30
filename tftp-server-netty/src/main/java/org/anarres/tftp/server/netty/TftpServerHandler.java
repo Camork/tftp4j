@@ -68,7 +68,7 @@ public class TftpServerHandler extends ChannelInboundHandlerAdapter {
                 }
                 case WRQ: {
                     TftpWriteRequestPacket request = (TftpWriteRequestPacket) packet;
-                    long tsize = request.getTSize() == -1 ? 0 : request.getTSize();
+                    int tsize = request.getTSize() == -1 ? 0 : (int)request.getTSize();
                     TftpData source = provider.openForWrite(request.getFilename(), tsize);
                     if (source == null) {
                         ctx.writeAndFlush(new TftpErrorPacket(packet.getRemoteAddress(), TftpErrorCode.FILE_NOT_FOUND), ctx.voidPromise());
