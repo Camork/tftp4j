@@ -9,9 +9,11 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.Weigher;
 import com.google.common.io.Files;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
@@ -30,20 +32,16 @@ public class TftpFileCacheDataProvider extends TftpFileChannelDataProvider {
     public TftpFileCacheDataProvider(@Nonnull String prefix, @Nonnegative long cacheSize) {
         super(prefix);
         this.cache = CacheBuilder.newBuilder()
-                .weigher(new Weigher<Object, TftpByteArrayData>() {
-            public int weigh(Object key, TftpByteArrayData value) {
-                return value.getSize();
-            }
-        }).maximumWeight(cacheSize)
-                .expireAfterAccess(10, TimeUnit.MINUTES)
-                .softValues()
-                .build(new CacheLoader<File, TftpByteArrayData>() {
-            @Override
-            public TftpByteArrayData load(File key) throws Exception {
-                byte[] data = Files.toByteArray(key);
-                return new TftpByteArrayData(data);
-            }
-        });
+            .weigher((Weigher<Object,TftpByteArrayData>)(key, value) -> value.getSize()).maximumWeight(cacheSize)
+            .expireAfterAccess(10, TimeUnit.MINUTES)
+            .softValues()
+            .build(new CacheLoader<File,TftpByteArrayData>() {
+                @Override
+                public TftpByteArrayData load(File key) throws Exception {
+                    byte[] data = Files.toByteArray(key);
+                    return new TftpByteArrayData(data);
+                }
+            });
     }
 
     /**
@@ -64,7 +62,7 @@ public class TftpFileCacheDataProvider extends TftpFileChannelDataProvider {
     }
 
     @Override
-    public TftpData open(String filename) throws IOException {
+    public TftpData open(@Nonnull String filename) throws IOException {
         File file = toFile(filename);
         if (file == null)
             return null;

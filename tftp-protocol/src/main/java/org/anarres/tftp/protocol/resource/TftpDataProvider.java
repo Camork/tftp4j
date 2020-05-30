@@ -9,7 +9,6 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 
 /**
- *
  * @author shevek
  */
 public interface TftpDataProvider {

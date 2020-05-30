@@ -12,6 +12,7 @@ import org.anarres.tftp.protocol.packet.TftpErrorPacket;
 import org.anarres.tftp.protocol.packet.TftpOptAckPackage;
 import org.anarres.tftp.protocol.packet.TftpPacket;
 import org.anarres.tftp.protocol.packet.TftpRequestPacket;
+import org.anarres.tftp.protocol.packet.TftpWriteRequestPacket;
 import org.anarres.tftp.protocol.resource.TftpData;
 import org.anarres.tftp.protocol.resource.TftpDataProvider;
 import org.apache.logging.log4j.LogManager;
@@ -50,7 +51,6 @@ public class TftpServerHandler extends ChannelInboundHandlerAdapter {
                     TftpData source = provider.open(request.getFilename());
                     if (source == null) {
                         ctx.writeAndFlush(new TftpErrorPacket(packet.getRemoteAddress(), TftpErrorCode.FILE_NOT_FOUND), ctx.voidPromise());
-                        // ctx.writeAndFlush(new TftpErrorPacket(packet.getRemoteAddress(), TftpErrorCode.FILE_NOT_FOUND)).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
                     } else {
                         TftpTransfer<Channel> transfer = new TftpReadTransfer(
                         	packet.getRemoteAddress(),
@@ -61,22 +61,32 @@ public class TftpServerHandler extends ChannelInboundHandlerAdapter {
                         Bootstrap bootstrap = new Bootstrap()
                                 .group(ctx.channel().eventLoop())
                                 .channel(channel.getClass())
-                                // .localAddress(new InetSocketAddress(0))
-                                // .remoteAddress(packet.getRemoteAddress())
                                 .handler(new TftpPipelineInitializer(sharedHandlers, new TftpTransferHandler(transfer)));
-                        bootstrap.connect(packet.getRemoteAddress());/*.addListener(new ChannelFutureListener() {
-                         @Override
-                         public void operationComplete(ChannelFuture future) throws Exception {
-                         LOG.info("Connected for " + packet);
-                         }
-                         });*/
-
+                        bootstrap.connect(packet.getRemoteAddress());
                     }
                     break;
                 }
                 case WRQ: {
-                    LOG.warn("Unexpected TFTP " + packet.getOpcode() + " packet: " + packet);
-                    ctx.writeAndFlush(new TftpErrorPacket(packet.getRemoteAddress(), TftpErrorCode.PERMISSION_DENIED), ctx.voidPromise());
+                    TftpWriteRequestPacket request = (TftpWriteRequestPacket) packet;
+                    long tsize = request.getTSize() == -1 ? 0 : request.getTSize();
+                    TftpData source = provider.openForWrite(request.getFilename(), tsize);
+                    if (source == null) {
+                        ctx.writeAndFlush(new TftpErrorPacket(packet.getRemoteAddress(), TftpErrorCode.FILE_NOT_FOUND), ctx.voidPromise());
+                    } else {
+                        TftpTransfer<Channel> transfer = new TftpWriteTransfer(
+                            packet.getRemoteAddress(),
+                            source,
+                            request.getBlockSize(),
+                            request.getTSize(),
+                            TftpOptAckPackage.makeIfDesired(packet.getRemoteAddress(), request, provider)
+                        );
+                        Bootstrap bootstrap = new Bootstrap()
+                            .group(ctx.channel().eventLoop())
+                            .channel(channel.getClass())
+                            .handler(new TftpPipelineInitializer(sharedHandlers, new TftpTransferHandler(transfer)));
+                        bootstrap.connect(packet.getRemoteAddress());
+                    }
+
                     break;
                 }
                 case ACK: {

@@ -60,7 +60,7 @@ public class TftpFileMapDataProvider extends TftpFileChannelDataProvider {
     }
 
     @Override
-    public TftpData open(String filename) throws IOException {
+    public TftpData open(@Nonnull String filename) throws IOException {
         File file = toFile(filename);
         if (file == null)
             return null;

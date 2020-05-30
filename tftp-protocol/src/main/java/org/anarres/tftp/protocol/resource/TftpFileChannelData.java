@@ -7,7 +7,9 @@ package org.anarres.tftp.protocol.resource;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+
 import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
 
 /**
  *
@@ -29,7 +31,7 @@ public class TftpFileChannelData extends AbstractTftpData {
     }
 
     @Override
-    public int read(ByteBuffer out, int offset) throws IOException {
+    public int read(@Nonnull ByteBuffer out, int offset) throws IOException {
         int length = channel.read(out, offset);
         return Math.max(length, 0);
     }

@@ -16,7 +16,7 @@ import java.nio.ByteBuffer;
  */
 public class TftpByteArrayData extends AbstractTftpData {
 
-    private final byte[] data;
+    private byte[] data;
 
     public TftpByteArrayData(@Nonnull byte[] data) {
         this.data = data;
@@ -28,7 +28,7 @@ public class TftpByteArrayData extends AbstractTftpData {
     }
 
     @Override
-    public int read(ByteBuffer out, int offset) throws IOException {
+    public int read(@Nonnull ByteBuffer out, int offset) throws IOException {
         Preconditions.checkPositionIndex(offset, getSize(), "Illegal data offset.");
         int length = Math.min(getSize() - offset, out.remaining());
         out.put(data, offset, length);

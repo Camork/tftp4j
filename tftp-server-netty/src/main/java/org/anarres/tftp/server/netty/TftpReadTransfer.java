@@ -41,18 +41,18 @@ public class TftpReadTransfer extends AbstractTftpReadTransfer<Channel> {
     }
 
     @Override
-    public void send(Channel channel, TftpPacket packet) throws Exception {
+    public void send(@Nonnull Channel channel, @Nonnull TftpPacket packet) throws Exception {
         packet.setRemoteAddress(getRemoteAddress());
         channel.write(packet, channel.voidPromise());
     }
 
     @Override
-    public void flush(Channel channel) throws Exception {
+    public void flush(@Nonnull Channel channel) throws Exception {
         channel.flush();
     }
 
     @Override
-    public void close(Channel channel) throws Exception {
+    public void close(@Nonnull Channel channel) throws Exception {
         channel.close().addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
         super.close(channel);
     }

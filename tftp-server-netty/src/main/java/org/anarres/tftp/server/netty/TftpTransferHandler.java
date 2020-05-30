@@ -44,11 +44,6 @@ public class TftpTransferHandler extends ChannelDuplexHandler {
         }
     }
 
-//    @Override
-//    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-//        transfer.timeout(ctx.channel());
-//    }
-
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         transfer.close(ctx.channel());
@@ -56,7 +51,7 @@ public class TftpTransferHandler extends ChannelDuplexHandler {
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         LOG.error("Error on channel: " + cause, cause);
         ctx.close();
     }

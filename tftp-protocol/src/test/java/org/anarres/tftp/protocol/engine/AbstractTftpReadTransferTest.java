@@ -12,6 +12,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import org.anarres.tftp.protocol.packet.TftpAckPacket;
 import org.anarres.tftp.protocol.packet.TftpDataPacket;
 import org.anarres.tftp.protocol.packet.TftpPacket;
@@ -44,7 +46,7 @@ public class AbstractTftpReadTransferTest {
         }
 
         @Override
-        public void send(List<TftpPacket> context, TftpPacket packet) throws Exception {
+        public void send(@Nonnull List<TftpPacket> context, @Nonnull TftpPacket packet) throws Exception {
             LOG.info("-> " + packet);
             context.add(packet);
 
@@ -52,11 +54,11 @@ public class AbstractTftpReadTransferTest {
         }
 
         @Override
-        public void flush(List<TftpPacket> context) throws Exception {
+        public void flush(@Nonnull List<TftpPacket> context) throws Exception {
         }
 
         @Override
-        public void close(List<TftpPacket> context) throws Exception {
+        public void close(@Nonnull List<TftpPacket> context) throws Exception {
             LOG.info("-> (close)");
             context.add(null);
             super.close(context);

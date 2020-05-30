@@ -59,7 +59,7 @@ public abstract class AbstractTftpReadTransfer<TftpTransferContext> extends Abst
     	@Nonnull TftpData source,
     	@Nonnegative int blockSize,
 		TftpOptAckPackage optAck	// Send first, then await ack for it before sending data, if specified
-	) throws IOException {
+	) {
         super(remoteAddress);
         this.source = source;
         this.blockSize = blockSize;
@@ -154,14 +154,6 @@ public abstract class AbstractTftpReadTransfer<TftpTransferContext> extends Abst
     public void timeout(@Nonnull TftpTransferContext context) throws Exception {
         //client has the timeout mechanism. just the close transmission.
         close(context);
-/*
-        if (recvRetry++ > MAX_RETRIES){
-            LOG.error("{}: Retries exceeded {} at packet {}", this, AbstractTftpReadTransfer.MAX_RETRIES, recvBlock + 1);
-            close(context);
-        } else {
-            ack(context, recvBlock);
-        }
-*/
     }
 
     @Override

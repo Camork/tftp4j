@@ -28,7 +28,7 @@ public class TftpByteBufferData extends AbstractTftpData {
     }
 
     @Override
-    public int read(ByteBuffer out, int offset) throws IOException {
+    public int read(@Nonnull ByteBuffer out, int offset) throws IOException {
         Preconditions.checkPositionIndex(offset, getSize(), "Illegal data offset.");
         int length = Math.min(getSize() - offset, out.remaining());
         ByteBuffer slice = data.slice();    // We might not be reading from a full buffer.

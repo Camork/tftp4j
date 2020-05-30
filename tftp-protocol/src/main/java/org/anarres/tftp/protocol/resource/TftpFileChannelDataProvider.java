@@ -6,12 +6,13 @@ package org.anarres.tftp.protocol.resource;
 
 import com.google.common.primitives.Ints;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 /**
  *
@@ -53,16 +54,14 @@ public class TftpFileChannelDataProvider extends AbstractTftpDataProvider {
 
     @Override
     // @IgnoreJRERequirement
-    public TftpData open(String filename) throws IOException {
+    public TftpData open(@Nonnull String filename) throws IOException {
         File file = toFile(filename);
         if (file == null)
             return null;
         RandomAccessFile raf = new RandomAccessFile(file, "r");
         FileChannel channel = raf.getChannel();
-        // FileChannel channel = FileChannel.open(file.toPath(), StandardOpenOption.READ);
         return new TftpFileChannelData(channel, Ints.checkedCast(channel.size()));
     }
-
 
 	@Override
 	public long dataSize(String filename) throws IOException {

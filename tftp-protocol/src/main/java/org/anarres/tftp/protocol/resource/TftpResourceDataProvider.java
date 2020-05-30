@@ -7,9 +7,10 @@ package org.anarres.tftp.protocol.resource;
 import com.google.common.base.MoreObjects;
 import com.google.common.io.Resources;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.URL;
+
+import javax.annotation.Nonnull;
 
 /**
  *
@@ -41,7 +42,7 @@ public class TftpResourceDataProvider extends AbstractTftpDataProvider {
     }
 
     @Override
-    public TftpData open(String filename) throws IOException {
+    public TftpData open(@Nonnull String filename) throws IOException {
         URL resource = getResourceForPath(filename);
         if (resource == null)
             return null;
